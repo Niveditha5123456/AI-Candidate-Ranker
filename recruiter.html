@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Recruiter Portal</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background-image: url('https://i.postimg.cc/YCgH4J9T/Whats-App-Image-2026-06-24-at-12-28-39-AM.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            margin:0;
+        }
+
+        .container{
+            width:80%;
+            max-width:800px;
+            background:white;
+            padding:40px;
+            border-radius:20px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.1);
+            text-align:center;
+        }
+
+        h1{
+            color:#0ea5e9;
+            margin-bottom:15px;
+        }
+
+        p{
+            color:#555;
+            margin-bottom:25px;
+        }
+
+        textarea{
+            width:100%;
+            height:180px;
+            padding:15px;
+            border:2px solid #cbd5e1;
+            border-radius:12px;
+            font-size:16px;
+            resize:none;
+            box-sizing:border-box;
+        }
+
+        button{
+            margin-top:20px;
+            padding:12px 30px;
+            border:none;
+            border-radius:10px;
+            background:#0ea5e9;
+            color:white;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#0284c7;
+        }
+        .candidate-dashboard{
+            position:fixed;
+            bottom:20px;
+            right:20px;
+            background:#0ea5e9;
+            color:white;
+            border:none;
+            padding:12px 20px;
+            border-radius:10px;
+            font-size:15px;
+            font-weight:600;
+            cursor:pointer;
+            box-shadow:0 0 10px rgba(0,150,255,.3);
+            z-index:1000;
+        }
+
+        .candidate-dashboard:hover{
+            background:#0284c7;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="candidate-dashboard"
+    onclick="window.location.href='dashboard.html'">
+    Back To Candidate Dashboard
+    </button>
+
+<div class="container">
+
+    <h1>Recruiter Portal</h1>
+
+    <p>
+        Enter the job description or role requirements below.
+    </p>
+
+    <textarea
+        id="jobDescription"
+        placeholder="Example: Looking for a Backend Engineer with Python, Flask, AWS and 3+ years experience"></textarea>
+
+    <br>
+
+    <button onclick="searchCandidates()">
+        Search Candidates
+    </button>
+
+</div>
+
+<script>
+
+function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function cleanTerms(text) {
+    return text
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter(word => word && !["for","with","and","the","a","an","looking","to","experience","years","role","responsibilities","who"].includes(word));
+}
+
+function searchCandidates(){
+
+    const jd =
+        document.getElementById(
+            "jobDescription"
+        ).value.trim().toLowerCase();
+
+    if(!jd){
+        alert("Please enter a job title or keywords to search.");
+        return;
+    }
+
+    fetch("http://127.0.0.1:5000/candidates")
+    .then(response => response.json())
+    .then(data => {
+        console.log("JD =", jd);
+        console.log(data);
+        const searchWords = cleanTerms(jd);
+        const matches = data.filter(c => {
+            const title = c.profile.current_title?.toLowerCase() || "";
+            const headline = c.profile.headline?.toLowerCase() || "";
+            const summary = c.profile.summary?.toLowerCase() || "";
+            const skillText = c.skills.map(skill => skill.name.toLowerCase()).join(" ");
+            const fullText = `${title} ${headline} ${summary} ${skillText}`;
+            return searchWords.some(word => new RegExp(`\\b${escapeRegExp(word)}\\b`).test(fullText));
+        });
+
+        if(matches.length){
+            localStorage.removeItem("candidateId");
+            localStorage.setItem("jobDescription", jd);
+            window.location.href = "matching_roles.html";
+        } else {
+            alert("No candidates matched your search. Try a different role or keyword.");
+        }
+    })
+}
+
+</script>
+
+</body>
+</html>

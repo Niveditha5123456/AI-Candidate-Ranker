@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Candidate Dashboard</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background-image: url('https://i.postimg.cc/YCgH4J9T/Whats-App-Image-2026-06-24-at-12-28-39-AM.jpg');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    min-height:100vh;
+}
+    
+
+header{
+    background:linear-gradient(135deg,#0f172a,#1e3a8a);
+    padding:30px;
+    text-align:center;
+    box-shadow:0 0 25px rgba(0,150,255,.3);
+}
+
+header h1{
+    font-size:36px;
+    font-weight:700;
+    color:white;
+}
+
+.search{
+    text-align:center;
+    margin:35px 0;
+}
+
+.search input{
+    width:450px;
+    max-width:90%;
+    padding:15px;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    background:#111827;
+    color:white;
+    font-size:16px;
+    box-shadow:0 0 10px rgba(0,150,255,.2);
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:30px;
+    padding:30px;
+    color: white;
+}
+.cards p{
+    margin: 10px 0;
+    color: white;
+}
+
+.cards-button{
+    margin-top:15px;
+}
+
+.card{
+    background:#111827;
+    border-radius:20px;
+    padding:25px;
+    transition:.3s;
+    box-shadow:0 0 20px rgba(0,0,0,.3);
+    gap: 30px;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+    box-shadow:0 0 25px rgba(0,150,255,.5);
+}
+
+.card h2{
+    color:#38bdf8;
+    margin-bottom:12px;
+}
+
+.role{
+    color:#d1d5db;
+    margin-bottom:10px;
+}
+
+.exp{
+    color:#22c55e;
+    margin-bottom:10px;
+    font-weight:bold;
+}
+
+.location{
+    color:#94a3b8;
+    margin-bottom:15px;
+}
+
+.score{
+    color:#38bdf8;
+    font-size:26px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.card button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#0ea5e9;
+    color:white;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.card button:hover{
+    background:#0284c7;
+}
+
+.stats{
+    display:flex;
+    justify-content:center;
+    gap:25px;
+    margin:30px;
+    flex-wrap:wrap;
+}
+
+.stat-card{
+    background:white;
+    padding:20px 35px;
+    border-radius:15px;
+    text-align:center;
+    min-width:180px;
+    box-shadow:0 0 15px rgba(0,150,255,.15);
+}
+
+.stat-card h3{
+    color:#38bdf8;
+    margin-bottom:10px;
+}
+
+.stat-card p{
+    font-size:24px;
+    font-weight:bold;
+}
+.recruit-btn{
+    position:fixed;
+    top:20px;
+    right:20px;
+    background:#0ea5e9;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    box-shadow:0 0 10px rgba(0,150,255,.3);
+    z-index:1000;
+}
+
+.recruit-btn:hover{
+    background:#0284c7;
+}
+
+</style>
+</head>
+
+<body>
+    <button class="recruit-btn"
+    onclick="window.location.href='recruiter.html'">
+    Recruitment Portal
+    </button>
+
+<header>
+    <h1>Candidate Dashboard</h1>
+</header>
+
+<div class="search">
+
+<input
+type="text"
+id="search"
+placeholder="Search Candidate"
+onkeyup="searchCandidate()">
+
+</div>
+
+<div class="cards" id="candidateList"></div>
+
+<script>
+
+let allCandidates=[];
+
+fetch("http://127.0.0.1:5000/candidates")
+.then(response=>response.json())
+.then(data=>{
+
+    allCandidates=data;
+
+    displayCandidates(data);
+
+});
+
+function displayCandidates(data){
+
+    let container=
+    document.getElementById(
+    "candidateList"
+    );
+
+    container.innerHTML="";
+
+    data.forEach(candidate=>{
+
+        container.innerHTML+=`
+
+        <div class="card">
+
+        <h2>
+        ${candidate.profile.anonymized_name}
+        </h2>
+
+        <p>
+        ${candidate.profile.current_title}
+        </p>
+
+        <p>
+        ${candidate.profile.years_of_experience}
+        years experience
+        </p>
+
+        <button
+        onclick="viewProfile(
+        '${candidate.candidate_id}'
+        )">
+
+        View Profile
+
+        </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+function searchCandidate(){
+
+    let search =
+    document
+    .getElementById("search")
+    .value
+    .toLowerCase();
+
+    let filtered =
+    allCandidates.filter(c => {
+
+        let text =
+        JSON.stringify(c)
+        .toLowerCase();
+
+        return text.includes(search);
+
+    });
+    console.log(filtered);
+    displayCandidates(filtered);
+
+
+}
+
+function viewProfile(id){
+
+    localStorage.setItem(
+    "candidateId",
+    id
+    );
+
+    window.location.href=
+    "candidate.html";
+
+}
+
+</script>
+
+</body>
+</html>

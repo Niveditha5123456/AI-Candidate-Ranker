@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Candidate Ranking System</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background-image: url('https://i.postimg.cc/YCgH4J9T/Whats-App-Image-2026-06-24-at-12-28-39-AM.jpg');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    min-height:100vh;
+}
+
+nav{
+    display:flex;
+    justify-content:space-between;
+    padding:20px 80px;
+    align-items:center;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+}
+
+nav ul li{
+    margin-left:25px;
+}
+
+.hero{
+    height:85vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:60px;
+}
+
+.hero p{
+    width:60%;
+    color:black
+    font-weight 2000;
+}
+
+.search-btn{
+    margin-top:30px;
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:15px 35px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.stats{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    margin-top:40px;
+}
+
+.card{
+    background:linear-gradient(135deg,#0f172a,32563eb);
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 0 15px rgba(37,99,235,0.35);
+    text-align:center;
+}
+.features,
+.workflow,
+#about,
+#contact{
+    max-width:1200px;
+    margin:80px auto;
+    padding:20px;
+    text-align:center;
+}
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+    margin-top:40px;
+}
+
+.feature-card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.1);
+    padding:30px;
+    border-radius:20px;
+}
+
+.steps{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    flex-wrap:wrap;
+    margin-top:40px;
+}
+
+.step{
+    width:180px;
+    background:rgba(255,255,255,0.08);
+    padding:30px;
+    border-radius:20px;
+}
+
+.step h3{
+    color:#38bdf8;
+    font-size:40px;
+}
+
+footer{
+    text-align:center;
+    padding:30px;
+    margin-top:60px;
+    border-top:1px solid rgba(255,255,255,0.1);
+}
+
+.nav-links{
+    display:flex;
+    gap:25px;
+}
+
+.nav-links a{
+    color:white;
+    text-decoration:none;
+    font-weight:600;
+}
+
+.nav-links a:hover{
+    color:#38bdf8;
+}
+</style>
+
+</head>
+<body>
+
+<nav>
+    <div class="logo">Redrob AI</div>
+
+    <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </div>
+</nav>
+
+<section class="hero">
+
+    <h1>Intelligent Candidate Discovery</h1>
+
+    <p>
+        Find the best candidates using AI-powered
+        semantic ranking and recruiter intelligence.
+    </p>
+
+    <button class="search-btn"onclick="window.location.href='dashboard.html'">
+        Login
+    </button>
+
+    <div class="stats">
+
+        <div class="card">
+            <h2>100K+</h2>
+            <p>Candidates</p>
+        </div>
+
+        <div class="card">
+            <h2>95%</h2>
+            <p>Matching Accuracy</p>
+        </div>
+
+        <div class="card">
+            <h2>10K+</h2>
+            <p>Recruiters</p>
+        </div>
+
+    </div>
+
+</section>
+<section id="about">
+
+    <h2>Our Mission</h2>
+
+    <p>
+        Redrob AI helps recruiters discover the best talent
+        using artificial intelligence, semantic search and
+        intelligent candidate ranking.
+    </p>
+
+</section>
+<section id="contact">
+
+    <h2>Contact Us</h2>
+
+    <p>Email: support@redrobai.com</p>
+
+    <p>Phone: +91 9876543210</p>
+
+    <p>For more information, connect with our recruitment team.</p>
+
+</section>
+<footer>
+
+    <p>
+        © 2026 Redrob AI Candidate Ranking System
+    </p>
+
+</footer>
+
+
+</body>
+</html>

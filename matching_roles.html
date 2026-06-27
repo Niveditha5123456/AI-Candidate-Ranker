@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Matching Roles Found</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('https://i.postimg.cc/YCgH4J9T/Whats-App-Image-2026-06-24-at-12-28-39-AM.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            backdrop-filter: blur(12px);
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin-bottom: 8px;
+            font-size: 40px;
+            color: #38bdf8;
+        }
+
+        .header p {
+            color: #cbd5e1;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .candidate-card {
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .candidate-card h2 {
+            margin-top: 0;
+            color: #7dd3fc;
+        }
+
+        .candidate-card p,
+        .candidate-card li {
+            color: #e2e8f0;
+        }
+
+        .candidate-card .score-box {
+            background: linear-gradient(135deg, #0f172a, #1e40af);
+            padding: 16px;
+            border-radius: 18px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .candidate-card .score-box h3 {
+            margin: 0 0 6px;
+            color: #cbd5e1;
+        }
+
+        .candidate-card .score-box h1 {
+            margin: 0;
+            color: #22c55e;
+            font-size: 42px;
+        }
+
+        .candidate-card .info-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .candidate-card .info-row div {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 14px 16px;
+            border-radius: 14px;
+        }
+
+        .candidate-card .skill-list {
+            display: grid;
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .candidate-card .skill-list li {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 10px 14px;
+            border-radius: 14px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            padding: 12px 24px;
+            background: #0ea5e9;
+            color: white;
+            border-radius: 14px;
+            text-decoration: none;
+            transition: background .2s ease;
+        }
+
+        .back-link:hover {
+            background: #0284c7;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <a href="recruiter.html" class="back-link">← Back to Search</a>
+        <div class="header">
+            <h1>Matching Roles Found</h1>
+            <p id="searchQuery"></p>
+        </div>
+
+        <div id="resultsContainer"></div>
+    </div>
+
+    <script>
+        const jd = localStorage.getItem("jobDescription")?.trim().toLowerCase() || "";
+
+        function cleanTerms(text) {
+            return text
+                .replace(/[^a-z0-9\s]/g, " ")
+                .split(/\s+/)
+                .filter(word => word && !["for","with","and","the","a","an","looking","to","experience","years","role","responsibilities","who"].includes(word));
+        }
+
+        function escapeRegExp(value) {
+            return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        }
+
+        function calculateScore(candidate, searchWords) {
+            const titleHeadline = `${candidate.profile.current_title || ""} ${candidate.profile.headline || ""}`.toLowerCase();
+            const summary = (candidate.profile.summary || "").toLowerCase();
+            const skillText = candidate.skills.map(skill => skill.name.toLowerCase()).join(" ");
+            const fullText = `${titleHeadline} ${summary} ${skillText}`;
+            const wordRegexes = searchWords.map(word => new RegExp(`\\b${escapeRegExp(word)}\\b`));
+
+            if (!searchWords.length) {
+                return 0;
+            }
+
+            const wordMatches = wordRegexes.filter(regex => regex.test(fullText)).length;
+            if (!wordMatches) {
+                return 0;
+            }
+
+            const titleMatches = wordRegexes.filter(regex => regex.test(titleHeadline)).length;
+            const summaryMatches = wordRegexes.filter(regex => regex.test(summary)).length;
+            const skillMatches = wordRegexes.filter(regex => regex.test(skillText)).length;
+
+            const relatedKeywordMap = {
+                frontend: ["react", "angular", "vue", "vue.js", "typescript", "javascript", "css", "html", "webpack", "cypress", "jest", "tailwind", "sass", "bootstrap", "next.js", "redux", "vite", "storybook", "scss"],
+                backend: ["python", "java", "node", "node.js", "go", "ruby", "php", "sql", "nosql", "docker", "kubernetes", "aws", "azure", "gcp"],
+                data: ["python", "sql", "spark", "hadoop", "pandas", "numpy", "tensorflow", "pytorch", "ml", "data"]
+            };
+            const relatedTerms = searchWords.flatMap(word => relatedKeywordMap[word] || []);
+            const relatedMatches = relatedTerms.filter(term => new RegExp(`\\b${escapeRegExp(term)}\\b`).test(fullText)).length;
+
+            const score = Math.min(100, Math.round(
+                20 +
+                (wordMatches / searchWords.length) * 30 +
+                titleMatches * 20 +
+                summaryMatches * 6 +
+                skillMatches * 10 +
+                Math.min(30, relatedMatches * 5)
+            ));
+
+            return score;
+        }
+
+        function buildCandidateCard(candidate, score) {
+            const card = document.createElement("div");
+            card.className = "candidate-card";
+            card.innerHTML = `
+                <div class="score-box">
+                    <h3>AI Match Score</h3>
+                    <h1>${score}%</h1>
+                </div>
+                <h2>${candidate.profile.anonymized_name}</h2>
+                <div class="info-row">
+                    <div><strong>Title</strong><br>${candidate.profile.current_title}</div>
+                    <div><strong>Location</strong><br>${candidate.profile.location}</div>
+                    <div><strong>Experience</strong><br>${candidate.profile.years_of_experience} years</div>
+                </div>
+                <h3>Summary</h3>
+                <p>${candidate.profile.summary || "No summary available"}</p>
+                <h3>Skills</h3>
+                <ul class="skill-list"></ul>
+            `;
+
+            const skillsList = card.querySelector(".skill-list");
+            candidate.skills.forEach(skill => {
+                const item = document.createElement("li");
+                item.textContent = `${skill.name} (${skill.proficiency}) • ${skill.endorsements} endorsements`;
+                skillsList.appendChild(item);
+            });
+
+            return card;
+        }
+
+        function showMessage(message) {
+            const container = document.getElementById("resultsContainer");
+            container.innerHTML = `<p style="font-size:18px; color:#f8fafc;">${message}</p>`;
+        }
+
+            fetch("http://127.0.0.1:5000/candidates")
+            .then(response => response.json())
+            .then(data => {
+                if (!jd) {
+                    showMessage("No search query found. Please search again from the recruiter page.");
+                    return;
+                }
+
+                const searchWords = cleanTerms(jd);
+                document.getElementById("searchQuery").textContent = searchWords.length ? `Results for "${jd}"` : "";
+
+                const matches = data
+                    .map(candidate => ({
+                        candidate,
+                        score: calculateScore(candidate, searchWords)
+                    }))
+                    .filter(item => item.score > 0)
+                    .sort((a, b) => b.score - a.score);
+
+                const container = document.getElementById("resultsContainer");
+                if (!matches.length) {
+                    showMessage("No candidates matched your search. Try another role or keyword.");
+                    return;
+                }
+
+                matches.forEach(item => {
+                    container.appendChild(buildCandidateCard(item.candidate, item.score));
+                });
+            })
+            .catch(() => {
+                showMessage("Unable to load candidate data. Please try again later.");
+            });
+    </script>
+</body>
+</html>
